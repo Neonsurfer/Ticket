@@ -2,6 +2,7 @@ package com.simple.ticket.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.simple.simpleLib.dto.ExtendedEventDto;
+import com.simple.simpleLib.dto.ReserveDto;
 import com.simple.simpleLib.dto.SimpleEventDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,21 +18,21 @@ import java.util.Base64;
 @Service
 public class TicketService {
     private static String ENCODED_AUTH;
-    private final WebClient webClient;
+    private final WebClient partnerWebClient;
     @Autowired
     ObjectMapper objectMapper;
 
     public TicketService(WebClient.Builder builder,
-                         @Value("${partner.module.host}") String host,
-                         @Value("${partner.module.port}") String port,
+                         @Value("${partner.module.host}") String partnerHost,
+                         @Value("${partner.module.port}") String partnerPort,
                          @Value("${partner.module.username}") String partnerUsername,
                          @Value("${partner.module.password}") String partnerPassword) {
-        this.webClient = builder.baseUrl("http://" + host + ":" + port).build();
+        this.partnerWebClient = builder.baseUrl("http://" + partnerHost + ":" + partnerPort).build();
         ENCODED_AUTH = Base64.getEncoder().encodeToString((partnerUsername + ":" + partnerPassword).getBytes(StandardCharsets.UTF_8));
     }
 
     public Mono<ExtendedEventDto> getEvents() {
-        return webClient.get()
+        return partnerWebClient.get()
                 .uri("/partner/getEvents")
                 .header("Authorization", "Basic " + ENCODED_AUTH)
                 .retrieve()
@@ -40,10 +41,18 @@ public class TicketService {
 
 
     public Mono<SimpleEventDto> getEventById(Long eventId) {
-        return webClient.get()
+        return partnerWebClient.get()
                 .uri("/partner/getEvent/{id}", eventId)
                 .header("Authorization", "Basic " + ENCODED_AUTH)
                 .retrieve()
                 .bodyToMono(SimpleEventDto.class);
+    }
+
+    public Mono<ReserveDto> reserveByEventAndSeat(Long eventId, String seatId) {
+        return partnerWebClient.get()
+                .uri("/partner/reserve/{eventId}/{seatId}", eventId)
+                .header("Authorization", "Basic " + ENCODED_AUTH)
+                .retrieve()
+                .bodyToMono(ReserveDto.class);
     }
 }

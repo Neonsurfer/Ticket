@@ -11,7 +11,7 @@
 
     <groupId>com.simple</groupId>
     <artifactId>ticket</artifactId>
-    <version>0.0.3-SNAPSHOT</version>
+    <version>0.0.4-SNAPSHOT</version>
     <name>ticket</name>
     <description>Ticket module</description>
     <properties>
