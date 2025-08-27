@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
-import reactor.core.publisher.Mono;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
@@ -35,13 +34,14 @@ public class TicketService {
         ENCODED_AUTH = Base64.getEncoder().encodeToString((partnerUsername + ":" + partnerPassword).getBytes(StandardCharsets.UTF_8));
     }
 
-    public Mono<ExtendedEventDto> getEvents() throws JsonProcessingException {
+    public ExtendedEventDto getEvents() throws JsonProcessingException {
         try {
             return partnerWebClient.get()
                     .uri("/partner/getEvents")
                     .header("Authorization", "Basic " + ENCODED_AUTH)
                     .retrieve()
-                    .bodyToMono(ExtendedEventDto.class);
+                    .bodyToMono(ExtendedEventDto.class)
+                    .block();
         } catch (WebClientResponseException e) {
             ErrorResponse response = objectMapper.readValue(e.getResponseBodyAsString(), ErrorResponse.class);
             throw new BusinessException(response.getErrorMessage(), response.getErrorCode());
@@ -49,13 +49,14 @@ public class TicketService {
     }
 
 
-    public Mono<SimpleEventDto> getEventById(Long eventId) throws JsonProcessingException {
+    public SimpleEventDto getEventById(Long eventId) throws JsonProcessingException {
         try {
             return partnerWebClient.get()
                     .uri("/partner/getEvent/{id}", eventId)
                     .header("Authorization", "Basic " + ENCODED_AUTH)
                     .retrieve()
-                    .bodyToMono(SimpleEventDto.class);
+                    .bodyToMono(SimpleEventDto.class)
+                    .block();
         } catch (WebClientResponseException e) {
             ErrorResponse response = objectMapper.readValue(e.getResponseBodyAsString(), ErrorResponse.class);
             throw new BusinessException(response.getErrorMessage(), response.getErrorCode());

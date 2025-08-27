@@ -8,7 +8,6 @@ import com.simple.ticket.service.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Mono;
 
 @RestController("ticket")
 public class TicketController {
@@ -18,13 +17,13 @@ public class TicketController {
 
     @GetMapping("/getEvents")
     @ResponseStatus(HttpStatus.OK)
-    public Mono<ExtendedEventDto> getEvents() throws JsonProcessingException {
+    public ExtendedEventDto getEvents() throws JsonProcessingException {
         return service.getEvents();
     }
 
     @GetMapping("/getEvent/{eventId}")
     @ResponseStatus(HttpStatus.OK)
-    public Mono<SimpleEventDto> getEventById(@PathVariable Long eventId) throws JsonProcessingException {
+    public SimpleEventDto getEventById(@PathVariable Long eventId) throws JsonProcessingException {
         return service.getEventById(eventId);
     }
 
