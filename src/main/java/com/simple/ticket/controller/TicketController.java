@@ -1,5 +1,6 @@
 package com.simple.ticket.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.simple.simpleLib.dto.ExtendedEventDto;
 import com.simple.simpleLib.dto.ReserveDto;
 import com.simple.simpleLib.dto.SimpleEventDto;
@@ -17,19 +18,19 @@ public class TicketController {
 
     @GetMapping("/getEvents")
     @ResponseStatus(HttpStatus.OK)
-    public Mono<ExtendedEventDto> getEvents() {
+    public Mono<ExtendedEventDto> getEvents() throws JsonProcessingException {
         return service.getEvents();
     }
 
     @GetMapping("/getEvent/{eventId}")
     @ResponseStatus(HttpStatus.OK)
-    public Mono<SimpleEventDto> getEventById(@PathVariable Long eventId) {
+    public Mono<SimpleEventDto> getEventById(@PathVariable Long eventId) throws JsonProcessingException {
         return service.getEventById(eventId);
     }
 
     @PostMapping("/reserve/{eventId}/{seatId}")
     @ResponseStatus(HttpStatus.OK)
-    public ReserveDto reserve(@PathVariable Long eventId, @PathVariable String seatId) {
-        return service.reserveByEventAndSeat(eventId, seatId).block();
+    public ReserveDto reserve(@PathVariable Long eventId, @PathVariable String seatId) throws JsonProcessingException {
+        return service.reserveByEventAndSeat(eventId, seatId);
     }
 }
