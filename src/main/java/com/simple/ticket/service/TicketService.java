@@ -34,8 +34,15 @@ public class TicketService {
         ENCODED_AUTH = Base64.getEncoder().encodeToString((partnerUsername + ":" + partnerPassword).getBytes(StandardCharsets.UTF_8));
     }
 
+    /**
+     * Requests events from Partner microservice
+     *
+     * @return returns a list of events
+     * @throws JsonProcessingException if partner response is erroneous
+     */
     public ExtendedEventDto getEvents() throws JsonProcessingException {
         try {
+            log.info("Getting events from partner");
             return partnerWebClient.get()
                     .uri("/partner/getEvents")
                     .header("Authorization", "Basic " + ENCODED_AUTH)
@@ -48,9 +55,16 @@ public class TicketService {
         }
     }
 
-
+    /**
+     * Requests event by id from Partner microservice
+     *
+     * @param eventId id of event to be requested
+     * @return dto of event or exception if not found
+     * @throws JsonProcessingException if partner response is erroneous
+     */
     public SimpleEventDto getEventById(Long eventId) throws JsonProcessingException {
         try {
+            log.info("Getting event with id {} from partner", eventId);
             return partnerWebClient.get()
                     .uri("/partner/getEvent/{id}", eventId)
                     .header("Authorization", "Basic " + ENCODED_AUTH)
@@ -63,8 +77,17 @@ public class TicketService {
         }
     }
 
+    /**
+     * Tries to reserve a seat on an event
+     *
+     * @param eventId id of event for reservation
+     * @param seatId  id of seat to be reserved
+     * @return success, and if so, reservationId. Otherwise exception
+     * @throws JsonProcessingException if partner response is erroneous
+     */
     public ReserveDto reserveByEventAndSeat(Long eventId, String seatId) throws JsonProcessingException {
         try {
+            log.info("Trying to reserve seat with id {} on event {} with partner", seatId, eventId);
             return partnerWebClient.post()
                     .uri("/partner/reserve/{eventId}/{seatId}", eventId, seatId)
                     .header("Authorization", "Basic " + ENCODED_AUTH)
